@@ -1,0 +1,67 @@
+name: release
+
+on:
+  push:
+    tags:
+      - "*"
+
+jobs:
+  dummy:
+    name: Dummy Job
+    runs-on: ubuntu-latest
+    steps:
+      - name: Dummy Step
+        run: echo "This is a dummy job"
+
+  release:
+    name: Release
+    runs-on: ubuntu-latest
+    steps:
+      - name: Setup Node
+        uses: actions/setup-node@v3
+        with:
+          node-version: "18"
+          registry-url: "https://registry.npmjs.org"
+
+      - uses: pnpm/action-setup@v2.2.4
+        name: Install pnpm
+        id: pnpm-install
+        with:
+          version: 8
+          run_install: false
+
+      - name: Checkout
+        uses: actions/checkout@v3
+        with:
+          ref: main
+          path: Spark-web
+          persist-credentials: false
+          fetch-depth: 0
+          submodules: recursive
+
+      - name: Checkout dist repo
+        uses: actions/checkout@v3
+        with:
+          repository: 5hojib/web-dist
+          ref: main
+          path: web-dist
+          persist-credentials: false
+          fetch-depth: 0
+
+      - name: Build
+        run: |
+          mv Spark-web/release.sh .
+          bash release.sh
+
+      - name: Upload dist files
+        uses: ad-m/github-push-action@master
+        with:
+          github_token: ${{ secrets.MY_TOKEN }}
+          branch: main
+          directory: web-dist
+          repository: 5hojib/web-dist
+
+      - name: Release
+        uses: softprops/action-gh-release@v1
+        with:
+          files: compress/*
