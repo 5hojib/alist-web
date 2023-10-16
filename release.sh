@@ -1,5 +1,5 @@
 # replace version
-cd Spark-web
+cd alist-web
 version=$(git describe --abbrev=0 --tags)
 sed -i -e "s/0.0.0/$version/g" package.json
 cat package.json

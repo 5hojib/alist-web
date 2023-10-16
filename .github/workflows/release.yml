@@ -34,7 +34,7 @@ jobs:
         uses: actions/checkout@v3
         with:
           ref: main
-          path: Spark-web
+          path: alist-web
           persist-credentials: false
           fetch-depth: 0
           submodules: recursive
@@ -50,7 +50,7 @@ jobs:
 
       - name: Build
         run: |
-          mv Spark-web/release.sh .
+          mv alist-web/release.sh .
           bash release.sh
 
       - name: Upload dist files
